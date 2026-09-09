@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ru" class="page-commissions">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rampie — Commissions</title>
+    <meta name="description" content="Rampie — covers, mix, visuals. Commission menu." />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="crt" aria-hidden="true">
+      <div class="crt-grid"></div>
+      <div class="crt-grain"></div>
+      <div class="crt-vignette"></div>
+    </div>
+
+    <nav class="side-nav" aria-label="Sections">
+      <span class="node node-tl" aria-hidden="true"></span>
+      <span class="node node-tr" aria-hidden="true"></span>
+      <span class="node node-bl" aria-hidden="true"></span>
+      <span class="node node-br" aria-hidden="true"></span>
+      <p class="side-nav-kicker">INDEX</p>
+      <a href="#covers" data-nav="covers">COVERS</a>
+      <a href="#video" data-nav="video">VIDEO</a>
+      <a href="#faq" data-nav="faq">FAQ</a>
+      <a class="nav-order" href="#order">ORDER</a>
+    </nav>
+
+    <main class="stage stage-wide">
+      <article class="window window-wide">
+        <span class="node node-tl" aria-hidden="true"></span>
+        <span class="node node-tr" aria-hidden="true"></span>
+        <span class="node node-bl" aria-hidden="true"></span>
+        <span class="node node-br" aria-hidden="true"></span>
+        <div class="window-scan" aria-hidden="true"></div>
+
+        <header class="window-bar">
+          <div class="chips">
+            <span class="chip" id="clock-date">-- --</span>
+            <span class="chip" id="clock-time">--:--</span>
+            <a class="chip chip-link" href="index.html">CARD.01</a>
+          </div>
+          <div class="sys-label">CARD.02 / COMMISSIONS</div>
+          <div class="bar-status">
+            <span class="status-chip is-open" data-commissions-status>
+              <i class="status-dot" aria-hidden="true"></i>
+              <span data-commissions-label>OPEN</span>
+            </span>
+          </div>
+        </header>
+
+        <section class="page-intro">
+          <header class="title-bar">
+            <div>
+              <p class="kicker">SYS.USER / QUEUE</p>
+              <h1 class="page-title">COMMISSIONS</h1>
+            </div>
+            <span class="status-chip status-chip-lg is-open" data-commissions-status>
+              <i class="status-dot" aria-hidden="true"></i>
+              <span data-commissions-label>OPEN</span>
+            </span>
+          </header>
+          <p class="blurb page-blurb">
+            Covers, tuning, mix, and video work. Take a look, then DM me on Discord.
+          </p>
+        </section>
+
+        <!--
+          КАВЕРЫ — опции и цены за минуту.
+          Правь названия и цифры прямо здесь.
+        -->
+        <section class="mod" id="covers">
+          <header class="title-bar">
+            <div>
+              <p class="kicker">MODULE 01</p>
+              <h2>COVERS</h2>
+            </div>
+            <span class="mod-tag">VOCALSYNTH</span>
+          </header>
+
+          <div class="opt-box">
+            <header>
+              <span>OPTIONS</span>
+              <span>USD / MIN</span>
+            </header>
+            <ol>
+              <li>
+                <span class="idx">01</span>
+                <div class="opt-copy">
+                  <span class="opt-name">MIDI / USTX / SVP / VPR</span>
+                  <span class="opt-desc">Vocal synth projects or MIDIs, including backing vocals/harmonies</span>
+                </div>
+                <span class="opt-price">$5</span>
+              </li>
+              <li>
+                <span class="idx">02</span>
+                <div class="opt-copy">
+                  <span class="opt-name">TUNE</span>
+                  <span class="opt-desc">Working with pitch and other parameters to create expressive vocals</span>
+                </div>
+                <span class="opt-price">$12</span>
+              </li>
+              <li>
+                <span class="idx">03</span>
+                <div class="opt-copy">
+                  <span class="opt-name">MIX</span>
+                  <span class="opt-desc">Mixing the vocal tracks into the song</span>
+                </div>
+                <span class="opt-price">$10</span>
+              </li>
+              <li>
+                <span class="idx">04</span>
+                <div class="opt-copy">
+                  <span class="opt-name">FULL SET</span>
+                  <span class="opt-desc">Vocal synth project + tune + mix together</span>
+                </div>
+                <span class="opt-price">$25</span>
+              </li>
+            </ol>
+          </div>
+
+          <p class="memo">
+            Please contact me on Discord first to discuss the details and deadlines.
+          </p>
+
+          <div class="works" data-works="covers">
+            <header class="works-head">
+              <div>
+                <p class="kicker">SELECTED WORKS</p>
+                <h3>COVER REELS</h3>
+              </div>
+              <div class="works-tools">
+                <span class="works-count" data-works-count>00</span>
+                <div class="view-toggle" role="group" aria-label="Works layout">
+                  <button type="button" class="is-on" data-view="carousel">CAROUSEL</button>
+                  <button type="button" data-view="grid">GRID</button>
+                </div>
+              </div>
+            </header>
+            <div class="carousel">
+              <button type="button" class="carousel-btn prev" data-carousel-prev aria-label="Previous">‹</button>
+              <div class="carousel-track" data-carousel-track tabindex="0"></div>
+              <button type="button" class="carousel-btn next" data-carousel-next aria-label="Next">›</button>
+            </div>
+          </div>
+        </section>
+
+        <!--
+          ВИДЕО — lyric / MV / анимация.
+          Цены здесь за работу, не за минуту — поправь как нужно.
+        -->
+        <section class="mod" id="video">
+          <header class="title-bar">
+            <div>
+              <p class="kicker">MODULE 02</p>
+              <h2>VIDEO</h2>
+            </div>
+            <span class="mod-tag">VISUALS</span>
+          </header>
+
+          <div class="opt-box">
+            <header>
+              <span>OPTIONS</span>
+              <span>USD / STARTING</span>
+            </header>
+            <ol>
+              <li>
+                <span class="idx">01</span>
+                <div class="opt-copy">
+                  <span class="opt-name">LYRIC VIDEO</span>
+                  <span class="opt-desc">Simple lyric video, text and timing on the track with simple effects and composition</span>
+                </div>
+                <span class="opt-price">$15</span>
+              </li>
+              <li>
+                <span class="idx">02</span>
+                <div class="opt-copy">
+                  <span class="opt-name">FULL MV</span>
+                  <span class="opt-desc">Full music video, animated text, camera, complex compositions</span>
+                </div>
+                <span class="opt-price">$35</span>
+              </li>
+              <li>
+                <span class="idx">03</span>
+                <div class="opt-copy">
+                  <span class="opt-name">SIMPLE MV</span>
+                  <span class="opt-desc">Full music video, simple animated text, camera and compositions</span>
+                </div>
+                <span class="opt-price">$25</span>
+              </li>
+              <li>
+                <span class="idx">04</span>
+                <div class="opt-copy">
+                  <span class="opt-name">ANIMATION</span>
+                  <span class="opt-desc">I can bring life to your character using After Effects tools</span>
+                </div>
+                <span class="opt-price">$30 per piece</span>
+              </li>
+              <li>
+                <span class="idx">05</span>
+                <div class="opt-copy">
+                  <span class="opt-name">ANIMATION + ASSET SEPARATION</span>
+                  <span class="opt-desc">Choose this if you don't have separated layers of your character</span>
+                </div>
+                <span class="opt-price">$45 per piece</span>
+              </li>
+            </ol>
+          </div>
+
+          <p class="memo">
+            Scope and price depend on length, assets, and how much motion you want. To discuss, contact me on Discord.
+          </p>
+
+          <div class="works" data-works="video">
+            <header class="works-head">
+              <div>
+                <p class="kicker">SELECTED WORKS</p>
+                <h3>VIDEO REELS</h3>
+              </div>
+              <div class="works-tools">
+                <span class="works-count" data-works-count>00</span>
+                <div class="view-toggle" role="group" aria-label="Works layout">
+                  <button type="button" class="is-on" data-view="carousel">CAROUSEL</button>
+                  <button type="button" data-view="grid">GRID</button>
+                </div>
+              </div>
+            </header>
+            <div class="carousel">
+              <button type="button" class="carousel-btn prev" data-carousel-prev aria-label="Previous">‹</button>
+              <div class="carousel-track" data-carousel-track tabindex="0"></div>
+              <button type="button" class="carousel-btn next" data-carousel-next aria-label="Next">›</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- FAQ — вопросы и ответы можно править здесь. -->
+        <section class="mod" id="faq">
+          <header class="title-bar">
+            <div>
+              <p class="kicker">MODULE 03</p>
+              <h2>FAQ</h2>
+            </div>
+            <span class="mod-tag">READOUT</span>
+          </header>
+
+          <div class="faq-box">
+            <details open>
+              <summary>
+                <span class="idx">01</span>
+                <span>How do I order?</span>
+              </summary>
+              <p>Send me a Discord DM with the song, what you need (MIDI / tune / mix / video), length, and a deadline if you have one. We agree on the option and price before any work starts.</p>
+            </details>
+            <details>
+              <summary>
+                <span class="idx">02</span>
+                <span>What if you don't have a specific voicebank?</span>
+              </summary>
+              <p>If the voice bank requires a paid license, there are several options: <br><br>
+                - I can work with the voice bank I already have and provide you with a project file for rendering.<br>
+                - You can provide me with an account for the voice bank, if the engine technically allows it and that works for you.<br><br>
+                I mostly work with Synthesizer V and Diffsinger, but I also have experience working with Vocaloid, UTAU, and Voisona.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span class="idx">03</span>
+                <span>What should I send for a cover?</span>
+              </summary>
+              <p>MIDI, USTX, SVP, or VPR if you have it, any preferences - for example, how it should feel. Note the singer, tempo, and whether you want harmonies or backing vocals. WAV / instrumental helps for mix.</p>
+            </details>
+            <details>
+              <summary>
+                <span class="idx">04</span>
+                <span>Are prices per finished minute?</span>
+              </summary>
+              <p>The prices for covers listed on this page are per minute of track. Video prices are also per minute, but character animations are priced for the whole piece, since theese are looped animations and the price varies more depending on complexity.</p>
+            </details>
+            <details>
+              <summary>
+                <span class="idx">05</span>
+                <span>How long does it take?</span>
+              </summary>
+              <p>Depends on the option and the queue. A simple MIDI or lyric video is usually faster than a full cover or MV. I’ll give you a time window when we discuss.</p>
+            </details>
+            <details>
+              <summary>
+                <span class="idx">06</span>
+                <span>Can I change something after delivery?</span>
+              </summary>
+              <p>Small fixes and changes are part of the job. But bigger changes are treated as extra work, so I can ask for an extra.</p>
+            </details>
+          </div>
+        </section>
+
+        <section class="mod mod-order" id="order">
+          <header class="title-bar">
+            <div>
+              <p class="kicker">MODULE 04</p>
+              <h2>ORDER</h2>
+            </div>
+            <span class="mod-tag">CONTACT</span>
+          </header>
+
+          <p class="blurb">
+            Add me on Discord and send the idea.
+          </p>
+
+          <p class="order-invite">
+            Discord is the best way to reach me. Copy the username, add me, and send the song, what you need, and a deadline if you have one.
+          </p>
+
+          <button type="button" class="cta" id="copy-discord-cta" data-handle="rampiearts">
+            <span class="cta-kicker">COPY USERNAME</span>
+            <span class="cta-title">rampiearts</span>
+            <span class="cta-arrow" aria-hidden="true">→</span>
+          </button>
+        </section>
+      </article>
+    </main>
+
+    <div class="copy-toast" id="copy-toast" role="status" aria-live="polite">Username copied</div>
+
+    <div class="work-overlay" id="work-overlay" hidden>
+      <div class="work-overlay-panel">
+        <header>
+          <span data-overlay-label>WORK</span>
+          <button type="button" class="copy-btn" data-overlay-close>close</button>
+        </header>
+        <div class="work-overlay-body" data-overlay-body></div>
+      </div>
+    </div>
+
+    <script src="data/status.js"></script>
+    <script src="data/works.js"></script>
+    <script src="js/card.js"></script>
+    <script src="js/commissions.js"></script>
+  </body>
+</html>

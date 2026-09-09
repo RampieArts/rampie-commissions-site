@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rampie</title>
+    <meta name="description" content="Rampie — visiting card" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="crt" aria-hidden="true">
+      <div class="crt-grid"></div>
+      <div class="crt-grain"></div>
+      <div class="crt-vignette"></div>
+    </div>
+
+    <main class="stage">
+      <!--
+        ГЛАВНОЕ ОКНО ВИЗИТКИ
+        Тексты ниже можно менять прямо здесь.
+        Аватар: положи файл assets/avatar.jpg
+        Цвета: css/styles.css, блок :root в самом верху
+      -->
+      <article class="window">
+        <span class="node node-tl" aria-hidden="true"></span>
+        <span class="node node-tr" aria-hidden="true"></span>
+        <span class="node node-bl" aria-hidden="true"></span>
+        <span class="node node-br" aria-hidden="true"></span>
+        <div class="window-scan" aria-hidden="true"></div>
+
+        <header class="window-bar">
+          <div class="chips">
+            <span class="chip" id="clock-date">-- --</span>
+            <span class="chip" id="clock-time">--:--</span>
+          </div>
+          <div class="sys-label">CARD.01 / VISIT</div>
+          <div class="bar-status">
+            <span class="status-chip is-open" data-commissions-status>
+              <i class="status-dot" aria-hidden="true"></i>
+              <span data-commissions-label>OPEN</span>
+            </span>
+          </div>
+        </header>
+
+        <div class="identity">
+          <div class="avatar-frame" id="avatar-frame">
+            <span class="avatar-letter">R</span>
+            <span class="av-corner av-tl" aria-hidden="true"></span>
+            <span class="av-corner av-tr" aria-hidden="true"></span>
+            <span class="av-corner av-bl" aria-hidden="true"></span>
+            <span class="av-corner av-br" aria-hidden="true"></span>
+          </div>
+
+          <div class="id-block">
+            <p class="kicker">SYS.USER</p>
+            <!-- Никнейм -->
+            <h1>RAMPIE</h1>
+            <dl class="spec">
+              <div>
+                <dt>HANDLE</dt>
+                <dd>@Rampieeeee</dd>
+              </div>
+              <div>
+                <dt>FIELD</dt>
+                <dd>music / visuals</dd>
+              </div>
+              <div>
+                <dt>STATUS</dt>
+                <dd class="status-text is-open" data-commissions-status data-commissions-label>OPEN</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Краткая информация. Перепиши своими словами. -->
+        <p class="blurb">
+          Hello, I'm Rampie, a vocalsynth enthusiast and more. Please take a look at my work and feel free to contact me.
+        </p>
+
+        <a class="cta" href="commissions.html">
+          <span class="cta-kicker">OPEN MODULE</span>
+          <span class="cta-title">COMMISSIONS</span>
+          <span class="cta-arrow" aria-hidden="true">→</span>
+        </a>
+
+        <section class="links-box">
+          <header>
+            <span>LINKS</span>
+            <span>03</span>
+          </header>
+          <ol>
+            <li>
+              <a href="https://x.com/Rampieeeee" target="_blank" rel="noreferrer">
+                <span class="idx">01</span>
+                <span class="link-name">X / TWITTER</span>
+                <span class="link-go">↗</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/@rampiemusic" target="_blank" rel="noreferrer">
+                <span class="idx">02</span>
+                <span class="link-name">YOUTUBE</span>
+                <span class="link-go">↗</span>
+              </a>
+            </li>
+            <li>
+              <div class="discord-row">
+                <span class="idx">03</span>
+                <span class="link-name">DISCORD</span>
+                <code id="discord-id">rampiearts</code>
+                <button type="button" class="copy-btn" id="copy-discord">copy</button>
+              </div>
+            </li>
+          </ol>
+        </section>
+      </article>
+    </main>
+
+    <script src="data/status.js"></script>
+    <script src="js/card.js"></script>
+  </body>
+</html>
