@@ -33,7 +33,11 @@ window.WORKS = {
     { url: "https://www.youtube.com/watch?v=JBY7O5UnLMY", title: "SAD GIRLZ LUV MONEY", tags: ["simple mv"] }
   ],
   // WebM из assets/animations/ подхватываются сами.
-  // Здесь можно только задать название и теги по имени файла:
-  //   { file: "loop.webm", title: "Teto idle", tags: ["loop"] }
-  animations: []
+  // Здесь можно задать название и теги по имени файла:
+  //   { file: "loop.webm", title: "Teto idle", tags: ["illust shikeii"] }
+  animations: [
+    { file: "lunai_katyusha.webm", tags: ["illust shikeii"] },
+    { file: "lunai_liam.webm", tags: ["illust shikeii"] },
+    { file: "lunai_monone.webm", tags: ["illust shikeii"] }
+  ]
 };

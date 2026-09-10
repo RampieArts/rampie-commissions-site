@@ -471,7 +471,7 @@
     }
 
     const media = card.querySelector(".work-media");
-    const tagRow = isWebm ? null : makeTags(tags);
+    const tagRow = makeTags(tags);
     media.style.cursor = "pointer";
     media.addEventListener("click", () => openOverlay({ ...parsed, url }, label));
 
@@ -488,6 +488,7 @@
       const size = () => applyMediaRatio(card, video);
       video.addEventListener("loadedmetadata", size);
       media.append(video);
+      if (tagRow) media.append(tagRow);
       bindVideoPlayback(video);
     } else if (parsed.type === "youtube") {
       const img = document.createElement("img");
