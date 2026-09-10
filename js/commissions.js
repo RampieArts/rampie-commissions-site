@@ -265,12 +265,29 @@
     overlayPanel?.classList.remove("is-native", "is-tweet");
   };
 
+  const mountTwitterEmbed = (id) => {
+    overlayBody.innerHTML = "";
+    overlayBody.style.removeProperty("--media-w");
+    overlayBody.style.removeProperty("--media-h");
+    overlayBody.style.removeProperty("aspect-ratio");
+    overlayPanel?.classList.remove("is-native");
+    overlayPanel?.classList.add("is-tweet");
+    const frame = document.createElement("iframe");
+    frame.src = `https://platform.twitter.com/embed/Tweet.html?id=${id}&theme=dark&dnt=true`;
+    frame.title = "X / Twitter";
+    frame.allow = "autoplay; encrypted-media; fullscreen";
+    frame.allowFullscreen = true;
+    overlayBody.append(frame);
+    bindTweetResize();
+  };
+
   const mountOverlayVideo = (src, opts = {}) => {
     const native = opts.native !== false;
     overlayPanel?.classList.toggle("is-native", native);
     overlayPanel?.classList.remove("is-tweet");
     const video = document.createElement("video");
-    video.src = src;
+    video.referrerPolicy = "no-referrer";
+    video.setAttribute("referrerpolicy", "no-referrer");
     video.controls = true;
     video.autoplay = true;
     video.loop = !!opts.loop;
@@ -285,6 +302,20 @@
     video.addEventListener("loadedmetadata", () => {
       if (native) applyMediaRatio(overlayBody, video);
     });
+    if (opts.tweetId) {
+      let settled = false;
+      const fallback = () => {
+        if (settled) return;
+        settled = true;
+        mountTwitterEmbed(opts.tweetId);
+      };
+      video.addEventListener("error", fallback);
+      video.addEventListener("loadeddata", () => { settled = true; });
+      setTimeout(() => {
+        if (!settled && video.readyState < 2) fallback();
+      }, 2500);
+    }
+    video.src = src;
     overlayBody.append(video);
     video.play().catch(() => {});
   };
@@ -305,28 +336,29 @@
     window.addEventListener("message", overlayMessage);
   };
 
-  const openTwitter = async (parsed) => {
-    overlayPanel?.classList.add("is-tweet");
-    const info = await twitterPreview(parsed.id);
-    if (overlay.hidden) return;
-    overlayBody.innerHTML = "";
-    if (info?.videoUrl) {
+  const canHotlinkTwimg = /^(localhost|127\.0\.0\.1)?$/i.test(location.hostname);
+
+  const playTwitterVideo = (parsed, info) => {
+    if (info?.videoUrl && canHotlinkTwimg) {
       overlayBody.style.removeProperty("height");
       mountOverlayVideo(info.videoUrl, {
         width: info.width,
         height: info.height,
         poster: info.thumb,
         native: (info.height || 0) > (info.width || 0),
+        tweetId: parsed.id,
       });
       return;
     }
-    overlayPanel?.classList.remove("is-native");
+    mountTwitterEmbed(parsed.id);
+  };
+
+  const openTwitter = async (parsed) => {
     overlayPanel?.classList.add("is-tweet");
-    const frame = document.createElement("iframe");
-    frame.src = `https://platform.twitter.com/embed/Tweet.html?id=${parsed.id}&theme=dark&dnt=true`;
-    frame.title = "X / Twitter";
-    overlayBody.append(frame);
-    bindTweetResize();
+    const info = await twitterPreview(parsed.id);
+    if (overlay.hidden) return;
+    overlayBody.innerHTML = "";
+    playTwitterVideo(parsed, info);
   };
 
   const openOverlay = (parsed, title) => {
@@ -348,13 +380,8 @@
       overlay.hidden = false;
       document.body.style.overflow = "hidden";
       const cached = twitterCache.get(parsed.id);
-      if (cached?.videoUrl) {
-        mountOverlayVideo(cached.videoUrl, {
-          width: cached.width,
-          height: cached.height,
-          poster: cached.thumb,
-          native: (cached.height || 0) > (cached.width || 0),
-        });
+      if (cached) {
+        playTwitterVideo(parsed, cached);
         return;
       }
       openTwitter(parsed);
