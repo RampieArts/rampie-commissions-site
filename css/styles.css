@@ -1121,6 +1121,19 @@ html.page-commissions {
   max-height: calc(90vh - 52px);
 }
 
+.work-overlay-panel.is-tweet {
+  width: min(550px, 96vw);
+}
+
+.work-overlay-panel.is-tweet .work-overlay-body {
+  aspect-ratio: auto;
+  width: 100%;
+  height: min(82vh, 640px);
+  max-height: calc(90vh - 52px);
+  overflow: hidden;
+  background: #15202b;
+}
+
 @media (max-width: 1100px) {
   .stage-wide {
     padding: 24px 16px 96px;

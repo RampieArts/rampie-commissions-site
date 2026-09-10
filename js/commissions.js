@@ -189,23 +189,46 @@
 
   const youtubeThumb = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 
+  const twitterCache = new Map();
+
+  const pickTwitterVideo = (tweet) => {
+    const videos = tweet?.media?.videos || [];
+    const first = videos[0];
+    if (!first) return { videoUrl: "", width: 0, height: 0 };
+    const variants = Array.isArray(first.variants) ? first.variants : [];
+    const mp4 = variants
+      .filter((item) => /mp4/i.test(String(item.content_type || "")) && item.url)
+      .sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
+    return {
+      videoUrl: mp4?.url || first.url || "",
+      width: first.width || Number(String(mp4?.url || first.url || "").match(/(\d+)x(\d+)/)?.[1]) || 0,
+      height: first.height || Number(String(mp4?.url || first.url || "").match(/(\d+)x(\d+)/)?.[2]) || 0,
+    };
+  };
+
   const twitterPreview = async (id) => {
+    if (twitterCache.has(id)) return twitterCache.get(id);
     try {
       const res = await fetch(`https://api.fxtwitter.com/status/${id}`);
       if (!res.ok) return null;
       const data = await res.json();
       const tweet = data.tweet || {};
       const photos = tweet.media?.photos || [];
-      const videos = tweet.media?.videos || [];
-      return {
+      const media = pickTwitterVideo(tweet);
+      const info = {
         text: tweet.text || "",
         author: tweet.author?.screen_name || "",
         thumb:
           photos[0]?.url ||
-          videos[0]?.thumbnail_url ||
-          videos[0]?.url ||
+          tweet.media?.videos?.[0]?.thumbnail_url ||
+          media.videoUrl ||
           null,
+        videoUrl: media.videoUrl,
+        width: media.width,
+        height: media.height,
       };
+      twitterCache.set(id, info);
+      return info;
     } catch {
       return null;
     }
@@ -226,13 +249,91 @@
     return "LINK";
   };
 
-  const openOverlay = (parsed, title) => {
-    if (!overlay || !overlayBody) return;
-    overlayBody.innerHTML = "";
+  let overlayMessage = null;
+
+  const stopOverlayListen = () => {
+    if (!overlayMessage) return;
+    window.removeEventListener("message", overlayMessage);
+    overlayMessage = null;
+  };
+
+  const resetOverlayChrome = () => {
     overlayBody.style.removeProperty("--media-w");
     overlayBody.style.removeProperty("--media-h");
     overlayBody.style.removeProperty("aspect-ratio");
-    overlayPanel?.classList.toggle("is-native", parsed.type === "webm");
+    overlayBody.style.removeProperty("height");
+    overlayPanel?.classList.remove("is-native", "is-tweet");
+  };
+
+  const mountOverlayVideo = (src, opts = {}) => {
+    const native = opts.native !== false;
+    overlayPanel?.classList.toggle("is-native", native);
+    overlayPanel?.classList.remove("is-tweet");
+    const video = document.createElement("video");
+    video.src = src;
+    video.controls = true;
+    video.autoplay = true;
+    video.loop = !!opts.loop;
+    video.muted = !!opts.muted;
+    video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    if (opts.muted) video.setAttribute("muted", "");
+    if (opts.poster) video.poster = opts.poster;
+    if (native && opts.width && opts.height) {
+      applyMediaRatio(overlayBody, { videoWidth: opts.width, videoHeight: opts.height });
+    }
+    video.addEventListener("loadedmetadata", () => {
+      if (native) applyMediaRatio(overlayBody, video);
+    });
+    overlayBody.append(video);
+    video.play().catch(() => {});
+  };
+
+  const bindTweetResize = () => {
+    stopOverlayListen();
+    overlayMessage = (event) => {
+      if (!/twitter\.com|x\.com/i.test(event.origin || "")) return;
+      let data = event.data;
+      if (typeof data === "string") {
+        try { data = JSON.parse(data); } catch { return; }
+      }
+      if (!data || typeof data !== "object") return;
+      const params = data.params?.[0] || data["twttr.embed"]?.params?.[0] || data;
+      const h = Number(params?.height || data.height);
+      if (h > 80) overlayBody.style.height = `${Math.round(h)}px`;
+    };
+    window.addEventListener("message", overlayMessage);
+  };
+
+  const openTwitter = async (parsed) => {
+    overlayPanel?.classList.add("is-tweet");
+    const info = await twitterPreview(parsed.id);
+    if (overlay.hidden) return;
+    overlayBody.innerHTML = "";
+    if (info?.videoUrl) {
+      overlayBody.style.removeProperty("height");
+      mountOverlayVideo(info.videoUrl, {
+        width: info.width,
+        height: info.height,
+        poster: info.thumb,
+        native: (info.height || 0) > (info.width || 0),
+      });
+      return;
+    }
+    overlayPanel?.classList.remove("is-native");
+    overlayPanel?.classList.add("is-tweet");
+    const frame = document.createElement("iframe");
+    frame.src = `https://platform.twitter.com/embed/Tweet.html?id=${parsed.id}&theme=dark&dnt=true`;
+    frame.title = "X / Twitter";
+    overlayBody.append(frame);
+    bindTweetResize();
+  };
+
+  const openOverlay = (parsed, title) => {
+    if (!overlay || !overlayBody) return;
+    overlayBody.innerHTML = "";
+    stopOverlayListen();
+    resetOverlayChrome();
     overlayLabel.textContent = parsed.type === "webm" ? "" : (title || sourceLabel(parsed.type));
     if (parsed.type === "youtube") {
       const frame = document.createElement("iframe");
@@ -244,23 +345,22 @@
       frame.title = title || "YouTube";
       overlayBody.append(frame);
     } else if (parsed.type === "twitter") {
-      const frame = document.createElement("iframe");
-      frame.src = `https://platform.twitter.com/embed/Tweet.html?id=${parsed.id}&theme=dark&dnt=true`;
-      overlayBody.append(frame);
+      overlay.hidden = false;
+      document.body.style.overflow = "hidden";
+      const cached = twitterCache.get(parsed.id);
+      if (cached?.videoUrl) {
+        mountOverlayVideo(cached.videoUrl, {
+          width: cached.width,
+          height: cached.height,
+          poster: cached.thumb,
+          native: (cached.height || 0) > (cached.width || 0),
+        });
+        return;
+      }
+      openTwitter(parsed);
+      return;
     } else if (parsed.type === "webm") {
-      const video = document.createElement("video");
-      video.src = parsed.url;
-      video.controls = true;
-      video.muted = true;
-      video.autoplay = true;
-      video.loop = true;
-      video.playsInline = true;
-      video.setAttribute("muted", "");
-      video.setAttribute("playsinline", "");
-      const size = () => applyMediaRatio(overlayBody, video);
-      video.addEventListener("loadedmetadata", size);
-      overlayBody.append(video);
-      video.play().catch(() => {});
+      mountOverlayVideo(parsed.url, { muted: true, loop: true, native: true });
     } else {
       window.open(parsed.url || title, "_blank", "noreferrer");
       return;
@@ -273,10 +373,8 @@
     if (!overlay || !overlayBody) return;
     overlay.hidden = true;
     overlayBody.innerHTML = "";
-    overlayBody.style.removeProperty("--media-w");
-    overlayBody.style.removeProperty("--media-h");
-    overlayBody.style.removeProperty("aspect-ratio");
-    overlayPanel?.classList.remove("is-native");
+    stopOverlayListen();
+    resetOverlayChrome();
     document.body.style.overflow = "";
   };
 
