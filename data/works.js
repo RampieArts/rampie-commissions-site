@@ -5,17 +5,18 @@
 
 window.WORKS = {
   covers: [
-    { url: "https://youtu.be/ZE_8lrZJEeo", title: "mechanical corpse", tags: ["tune", "mix"] },
+    { url: "https://youtu.be/ZE_8lrZJEeo", title: "mechanical corpse", tags: ["full cover"] },
     { url: "https://x.com/Rampieeeee/status/2008855235620753834?s=20", title: "Silly Terror / Teto", tags: ["svp", "mix", "tune"] },
-    { url: "https://www.youtube.com/watch?v=Blhl7uwPoT4", title: "SICK / SAiFA (RU)", tags: ["full cover", "ustx", "mix", "tune"] },
-    { url: "https://x.com/Rampieeeee/status/2082064314312151128?s=20", title: "Vodyanitsa's song", tags: ["full cover", "ustx", "mix", "tune"] },
+    { url: "https://www.youtube.com/watch?v=Blhl7uwPoT4", title: "SICK / SAiFA (RU)", tags: ["full cover"] },
+    { url: "https://x.com/Rampieeeee/status/2082064314312151128?s=20", title: "Vodyanitsa's song", tags: ["full cover"] },
     { url: "https://x.com/Rampieeeee/status/1766910644509360629?s=20", title: "Everything Goes On", tags: ["midi", "mix", "tune"] },
     { url: "https://www.youtube.com/watch?v=jJTgvcegYFI", title: "RICOCHET", tags: ["tune"] },
-    { url: "https://www.youtube.com/watch?v=-Joyg_U9Y-g", title: "WILDCARD", tags: ["full cover", "svp", "mix", "tune"] },
+    { url: "https://www.youtube.com/watch?v=WO10qBRo-mQ", title: "Like I Do", tags: ["tune"] },
+    { url: "https://www.youtube.com/watch?v=-Joyg_U9Y-g", title: "WILDCARD", tags: ["full cover"] },
     { url: "https://x.com/Rampieeeee/status/1984661895324877143?s=20", title: "manimani", tags: ["mix", "tune"] },
-    { url: "https://www.youtube.com/watch?v=JBY7O5UnLMY", title: "SAD GIRLZ LUV MONEY", tags: ["full cover", "svp", "mix", "tune"] },
-    { url: "https://www.youtube.com/watch?v=Cyfx8M7TqD4", title: "Suppress / GUMI SV", tags: ["full cover", "svp", "mix", "tune"] },
-    { url: "https://youtu.be/xosdtgOqcjY", title: "Fighting My Way / POPY SV", tags: ["full cover", "svp", "mix", "tune"] }
+    { url: "https://www.youtube.com/watch?v=JBY7O5UnLMY", title: "SAD GIRLZ LUV MONEY", tags: ["full cover"] },
+    { url: "https://www.youtube.com/watch?v=Cyfx8M7TqD4", title: "Suppress / GUMI SV", tags: ["full cover"] },
+    { url: "https://youtu.be/xosdtgOqcjY", title: "Fighting My Way / POPY SV", tags: ["full cover"] }
   ],
   video: [
     { url: "https://youtu.be/ZE_8lrZJEeo", title: "mechanical corpse", tags: ["lyric video"] },
