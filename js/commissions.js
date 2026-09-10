@@ -2,6 +2,7 @@
   const WORKS = window.WORKS || { covers: [], video: [], animations: [] };
   const WEBM = /\.webm($|\?)/i;
   const overlay = document.getElementById("work-overlay");
+  const overlayPanel = overlay?.querySelector(".work-overlay-panel");
   const overlayBody = overlay?.querySelector("[data-overlay-body]");
   const overlayLabel = overlay?.querySelector("[data-overlay-label]");
   const cta = document.getElementById("copy-discord-cta");
@@ -159,17 +160,14 @@
   };
 
   const loadFolderWorks = async (folder, extra) => {
+    const extraNames = collectWebmNames(extra);
     const [fromJson, fromDir, fromGh] = await Promise.all([
       listFromJson(folder),
       listFromDirectory(folder),
       withTimeout(listFromGitHub(folder), 8000),
     ]);
-    const listed = [
-      ...fromJson,
-      ...fromDir,
-      ...fromGh,
-      ...collectWebmNames(extra),
-    ];
+    const local = [...fromJson, ...fromDir, ...extraNames];
+    const listed = local.length ? local : fromGh;
     const meta = new Map();
     (Array.isArray(extra) ? extra : []).forEach((item) => {
       const n = normalize(item);
@@ -213,6 +211,15 @@
     }
   };
 
+  const applyMediaRatio = (el, video) => {
+    const w = video.videoWidth;
+    const h = video.videoHeight;
+    if (!w || !h || !el) return;
+    el.style.setProperty("--media-w", String(w));
+    el.style.setProperty("--media-h", String(h));
+    el.style.aspectRatio = `${w} / ${h}`;
+  };
+
   const sourceLabel = (type) => {
     if (type === "youtube") return "YOUTUBE";
     if (type === "twitter") return "X / TWITTER";
@@ -222,7 +229,11 @@
   const openOverlay = (parsed, title) => {
     if (!overlay || !overlayBody) return;
     overlayBody.innerHTML = "";
-    overlayLabel.textContent = title || sourceLabel(parsed.type);
+    overlayBody.style.removeProperty("--media-w");
+    overlayBody.style.removeProperty("--media-h");
+    overlayBody.style.removeProperty("aspect-ratio");
+    overlayPanel?.classList.toggle("is-native", parsed.type === "webm");
+    overlayLabel.textContent = parsed.type === "webm" ? "" : (title || sourceLabel(parsed.type));
     if (parsed.type === "youtube") {
       const frame = document.createElement("iframe");
       const origin = encodeURIComponent(location.origin);
@@ -240,11 +251,16 @@
       const video = document.createElement("video");
       video.src = parsed.url;
       video.controls = true;
+      video.muted = true;
       video.autoplay = true;
       video.loop = true;
       video.playsInline = true;
+      video.setAttribute("muted", "");
       video.setAttribute("playsinline", "");
+      const size = () => applyMediaRatio(overlayBody, video);
+      video.addEventListener("loadedmetadata", size);
       overlayBody.append(video);
+      video.play().catch(() => {});
     } else {
       window.open(parsed.url || title, "_blank", "noreferrer");
       return;
@@ -257,6 +273,10 @@
     if (!overlay || !overlayBody) return;
     overlay.hidden = true;
     overlayBody.innerHTML = "";
+    overlayBody.style.removeProperty("--media-w");
+    overlayBody.style.removeProperty("--media-h");
+    overlayBody.style.removeProperty("aspect-ratio");
+    overlayPanel?.classList.remove("is-native");
     document.body.style.overflow = "";
   };
 
@@ -307,8 +327,13 @@
     const isWebm = WEBM.test(url);
     const parsed = isWebm ? { type: "webm", id: "" } : parseUrl(url);
     const card = document.createElement("article");
-    card.className = "work-card";
-    card.innerHTML = `
+    card.className = isWebm ? "work-card is-anim" : "work-card";
+    const label = title || (isWebm ? prettyName(url) : sourceLabel(parsed.type));
+
+    if (isWebm) {
+      card.innerHTML = `<div class="work-media"></div>`;
+    } else {
+      card.innerHTML = `
       <div class="work-media"></div>
       <div class="work-meta">
         <span class="idx">${pad(index + 1)}</span>
@@ -316,13 +341,14 @@
         <a class="link-go" href="${url}" target="_blank" rel="noreferrer">↗</a>
       </div>
     `;
-    const media = card.querySelector(".work-media");
-    const titleEl = card.querySelector(".work-title");
-    titleEl.textContent = title || (isWebm ? prettyName(url) : sourceLabel(parsed.type));
+      const titleEl = card.querySelector(".work-title");
+      titleEl.textContent = label;
+    }
 
-    const tagRow = makeTags(tags);
+    const media = card.querySelector(".work-media");
+    const tagRow = isWebm ? null : makeTags(tags);
     media.style.cursor = "pointer";
-    media.addEventListener("click", () => openOverlay({ ...parsed, url }, titleEl.textContent));
+    media.addEventListener("click", () => openOverlay({ ...parsed, url }, label));
 
     if (parsed.type === "webm") {
       const video = document.createElement("video");
@@ -333,25 +359,27 @@
       video.setAttribute("muted", "");
       video.setAttribute("playsinline", "");
       video.preload = "metadata";
-      video.setAttribute("aria-label", titleEl.textContent);
+      video.setAttribute("aria-label", label);
+      const size = () => applyMediaRatio(card, video);
+      video.addEventListener("loadedmetadata", size);
       media.append(video);
-      if (tagRow) media.append(tagRow);
       bindVideoPlayback(video);
     } else if (parsed.type === "youtube") {
       const img = document.createElement("img");
-      img.alt = titleEl.textContent;
+      img.alt = label;
       img.src = youtubeThumb(parsed.id);
       media.append(img);
       if (tagRow) media.append(tagRow);
     } else if (parsed.type === "twitter") {
+      const titleEl = card.querySelector(".work-title");
       twitterPreview(parsed.id).then((info) => {
         if (info?.thumb) {
           const img = document.createElement("img");
-          img.alt = titleEl.textContent;
+          img.alt = titleEl?.textContent || label;
           img.src = info.thumb;
           media.append(img);
         }
-        if (!title && info?.text) {
+        if (!title && info?.text && titleEl) {
           titleEl.textContent = info.text.replace(/\s+/g, " ").slice(0, 72);
         }
         if (tagRow) media.append(tagRow);

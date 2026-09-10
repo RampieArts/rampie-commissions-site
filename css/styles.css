@@ -783,6 +783,17 @@ html.page-commissions {
   scroll-snap-type: none;
 }
 
+.works[data-works-folder] .carousel-track {
+  align-items: stretch;
+}
+
+.works[data-works-folder].is-grid .carousel-track {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: visible;
+  scroll-snap-type: none;
+}
+
 .work-card {
   flex: 0 0 min(68%, 720px);
   scroll-snap-align: start;
@@ -795,8 +806,21 @@ html.page-commissions {
   border-color: var(--line-hi);
 }
 
+.work-card.is-anim {
+  --anim-h: min(420px, 56vh);
+  flex: 0 0 auto;
+  height: var(--anim-h);
+  width: auto;
+  aspect-ratio: 9 / 16;
+}
+
 .works.is-grid .work-card {
   flex: none;
+  width: auto;
+}
+
+.works.is-grid .work-card.is-anim {
+  height: var(--anim-h);
   width: auto;
 }
 
@@ -823,6 +847,18 @@ html.page-commissions {
   object-fit: contain;
   background: #0a090e;
   pointer-events: none;
+}
+
+.work-card.is-anim .work-media {
+  height: 100%;
+  aspect-ratio: auto;
+  width: 100%;
+}
+
+.work-card.is-anim .work-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .work-tags {
@@ -1069,6 +1105,22 @@ html.page-commissions {
   object-fit: contain;
 }
 
+.work-overlay-panel.is-native {
+  width: fit-content;
+  max-width: 96vw;
+}
+
+.work-overlay-panel.is-native > header span:empty {
+  display: none;
+}
+
+.work-overlay-panel.is-native .work-overlay-body {
+  aspect-ratio: var(--media-w, 9) / var(--media-h, 16);
+  width: min(92vw, calc((90vh - 52px) * (var(--media-w, 9) / var(--media-h, 16))));
+  height: auto;
+  max-height: calc(90vh - 52px);
+}
+
 @media (max-width: 1100px) {
   .stage-wide {
     padding: 24px 16px 96px;
@@ -1123,6 +1175,11 @@ html.page-commissions {
 @media (max-width: 680px) {
   .work-card {
     flex-basis: 86%;
+  }
+
+  .work-card.is-anim {
+    flex-basis: auto;
+    height: min(380px, 52vh);
   }
 
   .opt-box li {
