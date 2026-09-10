@@ -1,5 +1,6 @@
 (() => {
-  const WORKS = window.WORKS || { covers: [], video: [] };
+  const WORKS = window.WORKS || { covers: [], video: [], animations: [] };
+  const WEBM = /\.webm($|\?)/i;
   const overlay = document.getElementById("work-overlay");
   const overlayBody = overlay?.querySelector("[data-overlay-body]");
   const overlayLabel = overlay?.querySelector("[data-overlay-label]");
@@ -62,13 +63,130 @@
     return { type: "link", id: "" };
   };
 
+  const fileName = (path) =>
+    decodeURIComponent(String(path).split("/").pop().split("?")[0] || "");
+
+  const prettyName = (path) =>
+    fileName(path).replace(/\.webm$/i, "").replace(/[-_]+/g, " ").trim();
+
+  const joinPath = (dir, name) =>
+    `${String(dir).replace(/\/+$/, "")}/${String(name).replace(/^\/+/, "")}`;
+
   const normalize = (item) => {
     if (typeof item === "string") return { url: item, title: "", tags: [] };
     const raw = item.tags ?? item.tag ?? [];
     const tags = (Array.isArray(raw) ? raw : [raw])
       .map((tag) => String(tag).trim())
       .filter(Boolean);
-    return { url: item.url || "", title: item.title || "", tags };
+    return {
+      url: item.url || item.file || item.src || "",
+      title: item.title || "",
+      tags,
+    };
+  };
+
+  const githubRepo = () => {
+    const host = location.hostname;
+    if (host.endsWith(".github.io")) return `${host.split(".")[0]}/${host}`;
+    return "rampiearts/rampiearts.github.io";
+  };
+
+  const collectWebmNames = (items) => {
+    const names = [];
+    const visit = (value) => {
+      if (!value) return;
+      if (typeof value === "string") {
+        if (WEBM.test(value)) names.push(fileName(value));
+        return;
+      }
+      if (Array.isArray(value)) {
+        value.forEach(visit);
+        return;
+      }
+      if (typeof value === "object") {
+        visit(value.file || value.src || value.url || value.name);
+      }
+    };
+    visit(items);
+    return names;
+  };
+
+  const withTimeout = (promise, ms) =>
+    Promise.race([
+      promise,
+      new Promise((resolve) => setTimeout(() => resolve([]), ms)),
+    ]);
+
+  const listFromJson = async (folder) => {
+    try {
+      const res = await fetch(joinPath(folder, "list.json"), { cache: "no-store" });
+      if (!res.ok) return [];
+      return collectWebmNames(await res.json());
+    } catch {
+      return [];
+    }
+  };
+
+  const listFromDirectory = async (folder) => {
+    try {
+      const res = await fetch(`${String(folder).replace(/\/+$/, "")}/`, { cache: "no-store" });
+      if (!res.ok) return [];
+      const type = res.headers.get("content-type") || "";
+      if (type && !/text\/html|text\/plain/i.test(type)) return [];
+      const html = await res.text();
+      return collectWebmNames(
+        [...html.matchAll(/href\s*=\s*["']([^"'?#]+\.webm)["']/gi)].map((m) => m[1])
+      );
+    } catch {
+      return [];
+    }
+  };
+
+  const listFromGitHub = async (folder) => {
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${githubRepo()}/contents/${String(folder).replace(/^\/+|\/+$/g, "")}`
+      );
+      if (!res.ok) return [];
+      const items = await res.json();
+      if (!Array.isArray(items)) return [];
+      return items
+        .filter((f) => f?.type === "file" && WEBM.test(f.name || ""))
+        .map((f) => f.name);
+    } catch {
+      return [];
+    }
+  };
+
+  const loadFolderWorks = async (folder, extra) => {
+    const [fromJson, fromDir, fromGh] = await Promise.all([
+      listFromJson(folder),
+      listFromDirectory(folder),
+      withTimeout(listFromGitHub(folder), 8000),
+    ]);
+    const listed = [
+      ...fromJson,
+      ...fromDir,
+      ...fromGh,
+      ...collectWebmNames(extra),
+    ];
+    const meta = new Map();
+    (Array.isArray(extra) ? extra : []).forEach((item) => {
+      const n = normalize(item);
+      const name = fileName(n.url);
+      if (!name) return;
+      meta.set(name, n);
+    });
+    const unique = [...new Set(listed.filter(Boolean))];
+    unique.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    return unique.map((name) => {
+      const info = meta.get(name) || {};
+      return {
+        url: joinPath(folder, name),
+        title: info.title || prettyName(name),
+        tags: info.tags || [],
+      };
+    });
   };
 
   const youtubeThumb = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
@@ -118,6 +236,15 @@
       const frame = document.createElement("iframe");
       frame.src = `https://platform.twitter.com/embed/Tweet.html?id=${parsed.id}&theme=dark&dnt=true`;
       overlayBody.append(frame);
+    } else if (parsed.type === "webm") {
+      const video = document.createElement("video");
+      video.src = parsed.url;
+      video.controls = true;
+      video.autoplay = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.setAttribute("playsinline", "");
+      overlayBody.append(video);
     } else {
       window.open(parsed.url || title, "_blank", "noreferrer");
       return;
@@ -133,10 +260,12 @@
     document.body.style.overflow = "";
   };
 
-  const emptyCard = (kind) => {
+  const emptyCard = (kind, folder) => {
     const card = document.createElement("div");
     card.className = "work-empty";
-    card.innerHTML = `No ${kind} yet. Add YouTube or X links in <code>data/works.js</code>.`;
+    card.innerHTML = folder
+      ? `No ${kind} yet. Add <code>.webm</code> files to <code>${folder}</code>.`
+      : `No ${kind} yet. Add YouTube or X links in <code>data/works.js</code>.`;
     return card;
   };
 
@@ -153,9 +282,30 @@
     return wrap;
   };
 
+  const bindVideoPlayback = (video) => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    if (!("IntersectionObserver" in window)) {
+      video.autoplay = true;
+      video.play().catch(() => {});
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) video.play().catch(() => {});
+          else video.pause();
+        });
+      },
+      { threshold: 0.25 }
+    );
+    io.observe(video);
+  };
+
   const makeCard = (item, index) => {
     const { url, title, tags } = normalize(item);
-    const parsed = parseUrl(url);
+    const isWebm = WEBM.test(url);
+    const parsed = isWebm ? { type: "webm", id: "" } : parseUrl(url);
     const card = document.createElement("article");
     card.className = "work-card";
     card.innerHTML = `
@@ -168,13 +318,26 @@
     `;
     const media = card.querySelector(".work-media");
     const titleEl = card.querySelector(".work-title");
-    titleEl.textContent = title || sourceLabel(parsed.type);
+    titleEl.textContent = title || (isWebm ? prettyName(url) : sourceLabel(parsed.type));
 
     const tagRow = makeTags(tags);
     media.style.cursor = "pointer";
     media.addEventListener("click", () => openOverlay({ ...parsed, url }, titleEl.textContent));
 
-    if (parsed.type === "youtube") {
+    if (parsed.type === "webm") {
+      const video = document.createElement("video");
+      video.src = url;
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.setAttribute("muted", "");
+      video.setAttribute("playsinline", "");
+      video.preload = "metadata";
+      video.setAttribute("aria-label", titleEl.textContent);
+      media.append(video);
+      if (tagRow) media.append(tagRow);
+      bindVideoPlayback(video);
+    } else if (parsed.type === "youtube") {
       const img = document.createElement("img");
       img.alt = titleEl.textContent;
       img.src = youtubeThumb(parsed.id);
@@ -201,21 +364,23 @@
     return card;
   };
 
-  const setupWorks = (root) => {
+  const setupWorks = async (root) => {
     const kind = root.dataset.works;
-    const list = Array.isArray(WORKS[kind]) ? WORKS[kind] : [];
+    const folder = (root.dataset.worksFolder || "").trim();
+    const extra = Array.isArray(WORKS[kind]) ? WORKS[kind] : [];
     const track = root.querySelector("[data-carousel-track]");
     const count = root.querySelector("[data-works-count]");
     const prev = root.querySelector("[data-carousel-prev]");
     const next = root.querySelector("[data-carousel-next]");
     if (!track) return;
 
+    const list = folder ? await loadFolderWorks(folder, extra) : extra;
     count && (count.textContent = pad(list.length));
     track.innerHTML = "";
 
     if (!list.length) {
       root.classList.add("is-empty");
-      track.append(emptyCard(kind));
+      track.append(emptyCard(kind, folder));
       return;
     }
 

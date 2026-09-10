@@ -30,5 +30,9 @@ window.WORKS = {
     { url: "https://www.youtube.com/watch?v=gsCGA1fYork", title: "All Save Challenge", tags: ["full mv"] },
     { url: "https://www.youtube.com/watch?v=Cyfx8M7TqD4", title: "Suppress / GUMI SV", tags: ["simple mv"] },
     { url: "https://www.youtube.com/watch?v=JBY7O5UnLMY", title: "SAD GIRLZ LUV MONEY", tags: ["simple mv"] }
-  ]
+  ],
+  // WebM из assets/animations/ подхватываются сами.
+  // Здесь можно только задать название и теги по имени файла:
+  //   { file: "loop.webm", title: "Teto idle", tags: ["loop"] }
+  animations: []
 };

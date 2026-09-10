@@ -810,12 +810,19 @@ html.page-commissions {
 }
 
 .work-media img,
-.work-media iframe {
+.work-media iframe,
+.work-media video {
   width: 100%;
   height: 100%;
   border: 0;
   object-fit: cover;
   display: block;
+}
+
+.work-media video {
+  object-fit: contain;
+  background: #0a090e;
+  pointer-events: none;
 }
 
 .work-tags {
@@ -1054,7 +1061,8 @@ html.page-commissions {
 }
 
 .work-overlay-body iframe,
-.work-overlay-body img {
+.work-overlay-body img,
+.work-overlay-body video {
   width: 100%;
   height: 100%;
   border: 0;

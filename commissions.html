@@ -239,6 +239,33 @@
               <button type="button" class="carousel-btn next" data-carousel-next aria-label="Next">›</button>
             </div>
           </div>
+
+          <!--
+            АНИМАЦИИ — webm из папки assets/animations/.
+            Положи файлы туда; карусель подхватит их сама.
+            Если локально не видно — перечисли имена в assets/animations/list.json.
+            Названия/теги по желанию можно задать в data/works.js.
+          -->
+          <div class="works" data-works="animations" data-works-folder="assets/animations">
+            <header class="works-head">
+              <div>
+                <p class="kicker">SELECTED WORKS</p>
+                <span class="works-head-text">ANIMATION REELS</span>
+              </div>
+              <div class="works-tools">
+                <span class="works-count" data-works-count>00</span>
+                <div class="view-toggle" role="group" aria-label="Works layout">
+                  <button type="button" class="is-on" data-view="carousel">CAROUSEL</button>
+                  <button type="button" data-view="grid">GRID</button>
+                </div>
+              </div>
+            </header>
+            <div class="carousel">
+              <button type="button" class="carousel-btn prev" data-carousel-prev aria-label="Previous">‹</button>
+              <div class="carousel-track" data-carousel-track tabindex="0"></div>
+              <button type="button" class="carousel-btn next" data-carousel-next aria-label="Next">›</button>
+            </div>
+          </div>
         </section>
 
         <!-- FAQ — вопросы и ответы можно править здесь. -->
