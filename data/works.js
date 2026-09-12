@@ -8,6 +8,7 @@ window.WORKS = {
     { url: "https://youtu.be/ZE_8lrZJEeo", title: "mechanical corpse", tags: ["full cover"] },
     { url: "https://x.com/Rampieeeee/status/2008855235620753834?s=20", title: "Silly Terror / Teto", tags: ["svp", "mix", "tune"] },
     { url: "https://www.youtube.com/watch?v=Blhl7uwPoT4", title: "SICK / SAiFA (RU)", tags: ["full cover"] },
+    { url: "https://x.com/Rampieeeee/status/2098756941874896951?s=20", title: "INTERNET ANGEL", tags: ["svp", "mix", "tune"] },
     { url: "https://x.com/Rampieeeee/status/2082064314312151128?s=20", title: "Vodyanitsa's song", tags: ["full cover"] },
     { url: "https://x.com/Rampieeeee/status/1766910644509360629?s=20", title: "Everything Goes On", tags: ["midi", "mix", "tune"] },
     { url: "https://www.youtube.com/watch?v=jJTgvcegYFI", title: "RICOCHET", tags: ["tune"] },
